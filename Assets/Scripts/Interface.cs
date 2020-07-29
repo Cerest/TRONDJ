@@ -55,27 +55,41 @@ public partial class Board
 	}
 }
 
+
 //The Interface class itself
 
 public class Interface : MonoBehaviour
 {
 	
+	private Camera MainCamera;
+	private GameObject CameraPlayer1;
+	private GameObject CameraPlayer2;
+	
 	private Board playboard;
 	private int[] lifecount;
 	private int count = 0;
 	public enum Screen { None, Title, Play, Over };
+	delegate void Event();
 	
     // Start is called before the first frame update
     void Start()
     {
-        playboard = new Board(500, 500);
+		MainCamera = Camera.main;
+		CameraPlayer1 = GameObject.Find("CameraPlayer1");
+		CameraPlayer2 = GameObject.Find("CameraPlayer2");
+		State(Screen.Title);
 		lifecount = new int[2];
 		lifecount[0] = 5;
 		lifecount[1] = 5;
     }
 
     // Update is called once per frame
-    void Update()
+	Event Update;
+	void UpdateEmpty()
+	{
+		;
+	}
+    void UpdatePlay()
     {
 		if (Input.GetButtonDown("Player1Up")) {
 			playboard.playerList[0].ChangeDir(Player.Direction.up);
@@ -122,6 +136,21 @@ public class Interface : MonoBehaviour
 	
 	public void State(Screen n)
 	{
-		//?
+		switch (n) {
+			case Screen.Title :
+			    MainCamera.enabled = false;
+				Update = UpdateEmpty;
+				break;
+			case Screen.Play :
+				playboard = new Board(0, 0);
+				Update = UpdatePlay;
+				break;
+			case Screen.Over :
+				break;
+			default :
+				break;
+		}
 	}
 }
+
+
