@@ -55,6 +55,7 @@ public partial class Board
 	}
 }
 
+//END PLACEHOLDER
 
 //The Interface class itself
 
@@ -64,12 +65,9 @@ public class Interface : MonoBehaviour
 	private Camera MainCamera;
 	private GameObject CameraPlayer1;
 	private GameObject CameraPlayer2;
+	private screenMode mode;
 	
-	private Board playboard;
-	private int[] lifecount;
-	private int count = 0;
 	public enum Screen { None, Title, Play, Over };
-	delegate void Event();
 	
     // Start is called before the first frame update
     void Start()
@@ -78,18 +76,107 @@ public class Interface : MonoBehaviour
 		CameraPlayer1 = GameObject.Find("CameraPlayer1");
 		CameraPlayer2 = GameObject.Find("CameraPlayer2");
 		State(Screen.Title);
-		lifecount = new int[2];
-		lifecount[0] = 5;
-		lifecount[1] = 5;
     }
 
     // Update is called once per frame
-	Event Update;
-	void UpdateEmpty()
+	void Update()
+	{
+		mode.Update(this);
+	}
+	
+	void OnGUI()
+	{
+		mode.OnGUI(this);
+	}
+	
+	public void Hurt(Player n)
+	{
+		mode.Hurt(this, n);
+	}
+	
+	public void State(Screen n)
+	{
+		switch (n) {
+			case Screen.Title :
+			    MainCamera.enabled = true;
+				CameraPlayer1.GetComponent<Camera>().enabled = false;
+				CameraPlayer2.GetComponent<Camera>().enabled = false;
+				mode = new Title();
+				break;
+			case Screen.Play :
+				MainCamera.enabled = false;
+				CameraPlayer1.GetComponent<Camera>().enabled = true;
+				CameraPlayer2.GetComponent<Camera>().enabled = true;
+				mode = new Play(2, 100, 100);
+				break;
+			case Screen.Over :
+				break;
+			default :
+				break;
+		}
+	}
+}
+
+interface screenMode
+{
+	void Update(Interface parent);
+	void OnGUI(Interface parent);
+	void Hurt(Interface parent, Player n);
+}
+
+//Handles Title Screen control
+public class Title : screenMode
+{
+	public void Update(Interface parent)
+	{
+		if (Input.GetButton("Player1Fire") && Input.GetButton("Player2Fire"))
+		{
+			parent.State(Interface.Screen.Play);
+		}
+	}
+	public void OnGUI(Interface parent)
+	{
+		GUI.Label(new Rect(10, 10, 100, 100), "Snake");
+		GUI.Label(new Rect(10, 25, 100, 100), "Press space + period to begin");
+	}
+	public void Hurt(Interface parent, Player n)
 	{
 		;
 	}
-    void UpdatePlay()
+}
+
+//Handles Game Over Screen control
+public class Over : screenMode
+{
+	public void Update(Interface parent)
+	{
+		;
+	}
+	public void OnGUI(Interface parent)
+	{
+		;
+	}
+	public void Hurt(Interface parent, Player n)
+	{
+		;
+	}
+}
+
+//Handles Gameplay Screen control
+public class Play : screenMode
+{
+	private int[] lifecount;
+	private Board playboard;
+	private int count = 0;
+	
+	private Play(){}	//No parameterless constructor
+	public Play(int playerCount, float boardSizeX, float boardSizeY)
+	{
+		lifecount = new int[playerCount];
+		playboard = new Board(boardSizeX, boardSizeY);
+	}
+	
+    public void Update(Interface parent)
     {
 		if (Input.GetButtonDown("Player1Up")) {
 			playboard.playerList[0].ChangeDir(Player.Direction.up);
@@ -119,13 +206,13 @@ public class Interface : MonoBehaviour
 		count++;
     }
 	
-	void OnGUI()
+	public void OnGUI(Interface parent)
 	{
 		GUI.Label(new Rect(10, 10, 1000, 1000), count.ToString());
 		playboard.Draw();
 	}
 	
-	public void Hurt(Player n)
+	public void Hurt(Interface parent, Player n)
 	{
 		lifecount[Array.IndexOf(playboard.playerList, n)]--;
 		if (lifecount[0] == 0 || lifecount[1] == 0)
@@ -133,24 +220,5 @@ public class Interface : MonoBehaviour
 			playboard.GameEnd();
 		}
 	}
-	
-	public void State(Screen n)
-	{
-		switch (n) {
-			case Screen.Title :
-			    MainCamera.enabled = false;
-				Update = UpdateEmpty;
-				break;
-			case Screen.Play :
-				playboard = new Board(0, 0);
-				Update = UpdatePlay;
-				break;
-			case Screen.Over :
-				break;
-			default :
-				break;
-		}
-	}
 }
-
 
