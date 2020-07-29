@@ -8,25 +8,45 @@ using UnityEngine;
 public partial class Player
 {
 	public int hitcount = 0;
-	private float X;
-	private float Y;
-	public Player(float Xpos, float Ypos)
+	public float X;
+	public float Y;
+	public Direction face;
+	public GameObject cube;
+	public Player(float Xpos, float Ypos, GameObject sprite)
 	{
 		X = Xpos;
 		Y = Ypos;
+		cube = sprite;
 	}
 	
 	public enum Direction {up, down, left, right};
 	
 	public void ChangeDir(Direction dir)
 	{
-		if (dir == Direction.up) {
-			hitcount++;
+		face = dir;
+	}
+	
+	public void Update()
+	{
+		switch (face) {
+			case Direction.up :
+				Y+=1;
+				break;
+			case Direction.down :
+				Y-=1;
+				break;
+			case Direction.left :
+				X-=1;
+				break;
+			case Direction.right :
+				X+=1;
+				break;
 		}
 	}
+	
 	public void Draw()
 	{
-		GUI.Label(new Rect(X, Y, 100, 100), "Up pressed: " + hitcount.ToString());
+		cube.GetComponent<Transform>().position = new Vector3(X, Y, -100);
 	}
 }
 public partial class Board
@@ -34,8 +54,8 @@ public partial class Board
 	public Board(float Xsize, float Ysize)
 	{
 		playerList = new Player[2];
-		playerList[0] = new Player(10, 25);
-		playerList[1] = new Player(10, 40);
+		playerList[0] = new Player(10, 25, GameObject.Find("Player1"));
+		playerList[1] = new Player(10, 40, GameObject.Find("Player2"));
 	}
 	
 	public Player[] playerList;
@@ -46,6 +66,12 @@ public partial class Board
 	public void Collide()
 	{
 		;
+	}
+	public void Update()
+	{
+		foreach (Player player in playerList) {
+			player.Update();
+		}
 	}
 	public void Draw()
 	{
@@ -63,8 +89,8 @@ public class Interface : MonoBehaviour
 {
 	
 	private Camera MainCamera;
-	private GameObject CameraPlayer1;
-	private GameObject CameraPlayer2;
+	public GameObject CameraPlayer1;
+	public GameObject CameraPlayer2;
 	private screenMode mode;
 	public int winner;
 	
@@ -229,7 +255,12 @@ public class Play : screenMode
 			parent.State(Interface.Screen.Over);
 		}
         playboard.Collide();
+		playboard.Update();
 		count++;
+		var cam1trans = parent.CameraPlayer1.GetComponent<Transform>();
+		var cam2trans = parent.CameraPlayer2.GetComponent<Transform>();
+		cam1trans.position = new Vector3(playboard.playerList[0].X, playboard.playerList[0].Y, cam1trans.position.z);
+		cam2trans.position = new Vector3(playboard.playerList[1].X, playboard.playerList[1].Y, cam2trans.position.z);
     }
 	
 	public void OnGUI(Interface parent)
