@@ -7,7 +7,7 @@ using UnityEngine;
 //When y'all create these classes, delete these lines!
 public partial class Player
 {
-	private int hitcount = 0;
+	public int hitcount = 0;
 	private float X;
 	private float Y;
 	public Player(float Xpos, float Ypos)
@@ -66,6 +66,7 @@ public class Interface : MonoBehaviour
 	private GameObject CameraPlayer1;
 	private GameObject CameraPlayer2;
 	private screenMode mode;
+	public int winner;
 	
 	public enum Screen { None, Title, Play, Over };
 	
@@ -110,6 +111,10 @@ public class Interface : MonoBehaviour
 				mode = new Play(2, 100, 100);
 				break;
 			case Screen.Over :
+			    MainCamera.enabled = true;
+				CameraPlayer1.GetComponent<Camera>().enabled = false;
+				CameraPlayer2.GetComponent<Camera>().enabled = false;
+				mode = new Over(winner);
 				break;
 			default :
 				break;
@@ -136,8 +141,8 @@ public class Title : screenMode
 	}
 	public void OnGUI(Interface parent)
 	{
-		GUI.Label(new Rect(10, 10, 100, 100), "Snake");
-		GUI.Label(new Rect(10, 25, 100, 100), "Press space + period to begin");
+		GUI.Label(new Rect(10, 10, 1000, 100), "Snake");
+		GUI.Label(new Rect(10, 25, 1000, 100), "Press space + period to begin");
 	}
 	public void Hurt(Interface parent, Player n)
 	{
@@ -148,13 +153,30 @@ public class Title : screenMode
 //Handles Game Over Screen control
 public class Over : screenMode
 {
+	private Over(){}
+	public Over(int winner)
+	{
+		this.winner = winner;
+	}
+	
+	private int winner;
+	private bool returning = false;
 	public void Update(Interface parent)
 	{
-		;
+		if (Input.GetButton("Player1Fire") && Input.GetButton("Player2Fire"))
+		{
+			returning = true;
+		}
+		if (returning && !Input.GetButton("Player1Fire") && !Input.GetButton("Player2Fire"))
+		{
+			parent.State(Interface.Screen.Title);
+		}
 	}
 	public void OnGUI(Interface parent)
 	{
-		;
+		GUI.Label(new Rect(10, 10, 1000, 100), "GAME OVER");
+		GUI.Label(new Rect(10, 25, 1000, 100), "Player " + winner.ToString() + " wins!");
+		GUI.Label(new Rect(10, 40, 1000, 100), "Press space + period to return to title screen.");
 	}
 	public void Hurt(Interface parent, Player n)
 	{
@@ -202,6 +224,10 @@ public class Play : screenMode
 		if (Input.GetButtonDown("Player2Right")) {
 			playboard.playerList[1].ChangeDir(Player.Direction.right);
 		}
+		if (Input.GetKey("tab")) {
+			parent.winner = playboard.playerList[0].hitcount > playboard.playerList[1].hitcount ? 1 : 2;
+			parent.State(Interface.Screen.Over);
+		}
         playboard.Collide();
 		count++;
     }
@@ -215,9 +241,11 @@ public class Play : screenMode
 	public void Hurt(Interface parent, Player n)
 	{
 		lifecount[Array.IndexOf(playboard.playerList, n)]--;
-		if (lifecount[0] == 0 || lifecount[1] == 0)
+		if (lifecount[0] == 0 && lifecount[1] == 0)
 		{
+			parent.winner = 0;
 			playboard.GameEnd();
+			parent.State(Interface.Screen.Over);
 		}
 	}
 }
