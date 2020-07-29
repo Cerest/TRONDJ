@@ -41,7 +41,7 @@ public class Interface : MonoBehaviour
 	
 	private Board playboard;
 	private int[] lifecount;
-	
+	private int count = 0;
 	public enum Screen { None, Title, Play, Over };
 	
     // Start is called before the first frame update
@@ -58,7 +58,13 @@ public class Interface : MonoBehaviour
     {
         playboard.Collide();
 		playboard.Draw();
+		count++;
     }
+	
+	void OnGUI()
+	{
+		GUI.Label(new Rect(10, 10, 1000, 1000), count.ToString());
+	}
 	
 	public void Hurt(Player n)
 	{
