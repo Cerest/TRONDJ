@@ -15,6 +15,7 @@ public class Interface : MonoBehaviour
 	private screenMode mode;
 	public int winner;
 	private GameObject[] winmsgs;
+	public Texture screenborder;
 	
 	public enum Screen { None, Title, Play, Over };
 	
@@ -220,6 +221,7 @@ public class Play : screenMode
 	public void OnGUI(Interface parent)
 	{
 		playboard.Draw();
+		GUI.DrawTexture(new Rect(Screen.width/2-10, -10, 30, Screen.height+20), parent.screenborder);
 	}
 	
 	public void Hurt(Interface parent, SnakePlayer n)

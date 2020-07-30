@@ -43,16 +43,16 @@ public class SnakePlayer
     {
 		switch (currDir) {
 			case Direction.up :
-				Y++;
+				Y+=0.1f;
 				break;
 			case Direction.down :
-				Y--;
+				Y-=0.1f;
 				break;
 			case Direction.left :
-				X--;
+				X-=0.1f;
 				break;
 			case Direction.right :
-				X++;
+				X+=0.1f;
 				break;
 		}
     }
