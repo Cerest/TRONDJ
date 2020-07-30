@@ -9,7 +9,8 @@ public class SnakePlayer : MonoBehaviour
     {
 
     }
-
+	public enum Direction {no};
+	private SnakePlayer(){}
     public SnakePlayer(float X, float Y, Color shade)
     {
 
@@ -17,30 +18,30 @@ public class SnakePlayer : MonoBehaviour
 
     public bool CheckCollide(float X, float Y)
     {
-
+		return false;
     }
 
     public bool CheckCollideHead(float X, float Y)
     {
-
+		return false;
     }
 
-    public Draw()
+    public void Draw()
     {
 
     }
 
-    public Move()
+    public void Move()
     {
 
     }
 
-    public ChangeDir(Direction dir)
+    public void ChangeDir(Direction dir)
     {
 
     }
 
-    public Die()
+    public void Die()
     {
 
     }

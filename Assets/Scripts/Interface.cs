@@ -128,6 +128,7 @@ public class Interface : MonoBehaviour
 			    MainCamera.enabled = true;
 				CameraPlayer1.GetComponent<Camera>().enabled = false;
 				CameraPlayer2.GetComponent<Camera>().enabled = false;
+				MainCamera.transform.position = new Vector3(-100, -124, -100);
 				mode = new Title();
 				break;
 			case Screen.Play :
@@ -140,6 +141,12 @@ public class Interface : MonoBehaviour
 			    MainCamera.enabled = true;
 				CameraPlayer1.GetComponent<Camera>().enabled = false;
 				CameraPlayer2.GetComponent<Camera>().enabled = false;
+				MainCamera.transform.position = new Vector3(-120, -124, -100);
+				GameObject[] winmsgs = GameObject.FindGameObjectsWithTag("WinMsgs");
+				foreach (GameObject msg in winmsgs) {
+					msg.GetComponent<Transform>().position = new Vector3(-120, -1240, -100);
+				}
+				winmsgs[winner].GetComponent<Transform>().position = new Vector3(-120, -124, -100);
 				mode = new Over(winner);
 				break;
 			default :
@@ -191,7 +198,7 @@ public class Over : screenMode
 	{
 		if (Input.GetButton("Player1Fire") && Input.GetButton("Player2Fire"))
 		{
-			returning = true;
+			//returning = true;
 		}
 		if (returning && !Input.GetButton("Player1Fire") && !Input.GetButton("Player2Fire"))
 		{
