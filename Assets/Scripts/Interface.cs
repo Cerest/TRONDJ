@@ -170,6 +170,9 @@ interface screenMode
 //Handles Title Screen control
 public class Title : screenMode
 {
+	public Title() {
+		GameObject.Find("MenuMusic").GetComponent<AudioSource>().Play();
+	}
 	public void Update(Interface parent)
 	{
 		if (Input.GetButton("Player1Fire") && Input.GetButton("Player2Fire"))
@@ -194,6 +197,7 @@ public class Over : screenMode
 	public Over(int winner)
 	{
 		this.winner = winner;
+		GameObject.Find("GameMusic").GetComponent<AudioSource>().Stop();
 	}
 	
 	private int winner;
@@ -231,6 +235,8 @@ public class Play : screenMode
 	{
 		lifecount = new int[playerCount];
 		playboard = new Board(boardSizeX, boardSizeY);
+		GameObject.Find("GameMusic").GetComponent<AudioSource>().Play();
+		GameObject.Find("MenuMusic").GetComponent<AudioSource>().Stop();
 	}
 	
     public void Update(Interface parent)
@@ -274,6 +280,12 @@ public class Play : screenMode
 				parent.winner = 0;
 			};
 			parent.State(Interface.Screen.Over);
+		}
+		if (Input.GetKey("h")) {
+			GameObject.Find("CrashSound").GetComponent<AudioSource>().Play();
+		}
+		if (Input.GetKey("i")) {
+			GameObject.Find("PowerupSound").GetComponent<AudioSource>().Play();
 		}
         playboard.Collide();
 		playboard.Update();
