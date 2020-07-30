@@ -90,6 +90,7 @@ interface screenMode
 public class Title : screenMode
 {
 	public Title() {
+		GameObject.Find("EndMusic").GetComponent<AudioSource>().Stop();
 		GameObject.Find("MenuMusic").GetComponent<AudioSource>().Play();
 	}
 	public void Update(Interface parent)
@@ -117,6 +118,7 @@ public class Over : screenMode
 	{
 		this.winner = winner;
 		GameObject.Find("GameMusic").GetComponent<AudioSource>().Stop();
+		GameObject.Find("EndMusic").GetComponent<AudioSource>().Play();
 	}
 	
 	private int winner;
