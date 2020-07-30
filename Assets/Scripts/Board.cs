@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Board : MonoBehaviour
+public class Board
 {
 	public Board(float Xsize, float Ysize)
 	{
 		playerList = new SnakePlayer[2];
 		playerList[0] = new SnakePlayer(10, 25, Color.green);
 		playerList[1] = new SnakePlayer(10, 40, Color.white);
+		powerupList = new List<PowerUp>();
 	}
 	
 	public SnakePlayer[] playerList;
-	public PowerUp[] powerupList;
+	public List<PowerUp> powerupList;
 	
 	public void GameEnd()
 	{
@@ -43,6 +44,7 @@ public class Board : MonoBehaviour
 	{
 		foreach (SnakePlayer player in playerList) {
 			player.Update();
+			player.Move();
 		}
 	}
 	public void Draw()
