@@ -88,21 +88,27 @@ public partial class Board
 public class Interface : MonoBehaviour
 {
 	
-	private Camera MainCamera;
+	private GameObject MainCamera;
 	public GameObject CameraPlayer1;
 	public GameObject CameraPlayer2;
 	private screenMode mode;
 	public int winner;
+	private GameObject[] winmsgs;
 	
 	public enum Screen { None, Title, Play, Over };
 	
     // Start is called before the first frame update
     void Start()
     {
-		MainCamera = Camera.main;
+		MainCamera = GameObject.Find("Main Camera");
 		CameraPlayer1 = GameObject.Find("CameraPlayer1");
 		CameraPlayer2 = GameObject.Find("CameraPlayer2");
 		State(Screen.Title);
+		winmsgs = new GameObject[] {
+			GameObject.Find("Tie"),
+			GameObject.Find("WinMsg1"),
+			GameObject.Find("WinMsg2")
+		};
     }
 
     // Update is called once per frame
@@ -125,28 +131,27 @@ public class Interface : MonoBehaviour
 	{
 		switch (n) {
 			case Screen.Title :
-			    MainCamera.enabled = true;
+			    MainCamera.GetComponent<Camera>().enabled = true;
 				CameraPlayer1.GetComponent<Camera>().enabled = false;
 				CameraPlayer2.GetComponent<Camera>().enabled = false;
-				MainCamera.transform.position = new Vector3(-100, -124, -100);
+				MainCamera.GetComponent<Transform>().position = new Vector3(-100, -124, -100);
 				mode = new Title();
 				break;
 			case Screen.Play :
-				MainCamera.enabled = false;
+				MainCamera.GetComponent<Camera>().enabled = false;
 				CameraPlayer1.GetComponent<Camera>().enabled = true;
 				CameraPlayer2.GetComponent<Camera>().enabled = true;
 				mode = new Play(2, 100, 100);
 				break;
 			case Screen.Over :
-			    MainCamera.enabled = true;
+			    MainCamera.GetComponent<Camera>().enabled = true;
 				CameraPlayer1.GetComponent<Camera>().enabled = false;
 				CameraPlayer2.GetComponent<Camera>().enabled = false;
-				MainCamera.transform.position = new Vector3(-120, -124, -100);
-				GameObject[] winmsgs = GameObject.FindGameObjectsWithTag("WinMsgs");
+				MainCamera.GetComponent<Transform>().position = new Vector3(-120, -124, -100);
 				foreach (GameObject msg in winmsgs) {
 					msg.GetComponent<Transform>().position = new Vector3(-120, -1240, -100);
 				}
-				winmsgs[winner].GetComponent<Transform>().position = new Vector3(-120, -124, -100);
+				winmsgs[winner].GetComponent<Transform>().position = new Vector3(-120, -124, -50);
 				mode = new Over(winner);
 				break;
 			default :
@@ -174,8 +179,7 @@ public class Title : screenMode
 	}
 	public void OnGUI(Interface parent)
 	{
-		GUI.Label(new Rect(10, 10, 1000, 100), "Snake");
-		GUI.Label(new Rect(10, 25, 1000, 100), "Press space + period to begin");
+		;
 	}
 	public void Hurt(Interface parent, Player n)
 	{
@@ -198,7 +202,7 @@ public class Over : screenMode
 	{
 		if (Input.GetButton("Player1Fire") && Input.GetButton("Player2Fire"))
 		{
-			//returning = true;
+			returning = true;
 		}
 		if (returning && !Input.GetButton("Player1Fire") && !Input.GetButton("Player2Fire"))
 		{
@@ -207,9 +211,7 @@ public class Over : screenMode
 	}
 	public void OnGUI(Interface parent)
 	{
-		GUI.Label(new Rect(10, 10, 1000, 100), "GAME OVER");
-		GUI.Label(new Rect(10, 25, 1000, 100), "Player " + winner.ToString() + " wins!");
-		GUI.Label(new Rect(10, 40, 1000, 100), "Press space + period to return to title screen.");
+		;
 	}
 	public void Hurt(Interface parent, Player n)
 	{
@@ -257,8 +259,20 @@ public class Play : screenMode
 		if (Input.GetButtonDown("Player2Right")) {
 			playboard.playerList[1].ChangeDir(Player.Direction.right);
 		}
+		if (Input.GetButtonDown("Player1Fire")) {
+			playboard.playerList[0].hitcount++;
+		}
+		if (Input.GetButtonDown("Player2Fire")) {
+			playboard.playerList[1].hitcount++;
+		}
 		if (Input.GetKey("tab")) {
-			parent.winner = playboard.playerList[0].hitcount > playboard.playerList[1].hitcount ? 1 : 2;
+			if (playboard.playerList[0].hitcount > playboard.playerList[1].hitcount) {
+				parent.winner = 1;
+			} else if (playboard.playerList[0].hitcount < playboard.playerList[1].hitcount) {
+				parent.winner = 2;
+			} else {
+				parent.winner = 0;
+			};
 			parent.State(Interface.Screen.Over);
 		}
         playboard.Collide();
