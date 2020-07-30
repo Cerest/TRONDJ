@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PowerUp : MonoBehaviour
 {
+	public float X;
+	public float Y;
     // Start is called before the first frame update
     void Start()
     {
@@ -15,4 +17,9 @@ public class PowerUp : MonoBehaviour
     {
         
     }
+	
+	public void Effect(SnakePlayer n)
+	{
+		;
+	}
 }

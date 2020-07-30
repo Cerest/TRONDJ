@@ -3,85 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//Placeholder for class names before they're created
-//When y'all create these classes, delete these lines!
-public partial class Player
-{
-	public int hitcount = 0;
-	public float X;
-	public float Y;
-	public Direction face;
-	public GameObject cube;
-	public Player(float Xpos, float Ypos, GameObject sprite)
-	{
-		X = Xpos;
-		Y = Ypos;
-		cube = sprite;
-	}
-	
-	public enum Direction {up, down, left, right};
-	
-	public void ChangeDir(Direction dir)
-	{
-		face = dir;
-	}
-	
-	public void Update()
-	{
-		switch (face) {
-			case Direction.up :
-				Y+=1;
-				break;
-			case Direction.down :
-				Y-=1;
-				break;
-			case Direction.left :
-				X-=1;
-				break;
-			case Direction.right :
-				X+=1;
-				break;
-		}
-	}
-	
-	public void Draw()
-	{
-		cube.GetComponent<Transform>().position = new Vector3(X, Y, -100);
-	}
-}
-public partial class Board
-{
-	public Board(float Xsize, float Ysize)
-	{
-		playerList = new Player[2];
-		playerList[0] = new Player(10, 25, GameObject.Find("Player1"));
-		playerList[1] = new Player(10, 40, GameObject.Find("Player2"));
-	}
-	
-	public Player[] playerList;
-	public void GameEnd()
-	{
-		;
-	}
-	public void Collide()
-	{
-		;
-	}
-	public void Update()
-	{
-		foreach (Player player in playerList) {
-			player.Update();
-		}
-	}
-	public void Draw()
-	{
-		foreach (Player player in playerList) {
-			player.Draw();
-		}
-	}
-}
-
-//END PLACEHOLDER
 
 //The Interface class itself
 
@@ -101,8 +22,6 @@ public class Interface : MonoBehaviour
     void Start()
     {
 		MainCamera = GameObject.Find("Main Camera");
-		CameraPlayer1 = GameObject.Find("CameraPlayer1");
-		CameraPlayer2 = GameObject.Find("CameraPlayer2");
 		State(Screen.Title);
 		winmsgs = new GameObject[] {
 			GameObject.Find("Tie"),
@@ -122,7 +41,7 @@ public class Interface : MonoBehaviour
 		mode.OnGUI(this);
 	}
 	
-	public void Hurt(Player n)
+	public void Hurt(SnakePlayer n)
 	{
 		mode.Hurt(this, n);
 	}
@@ -164,7 +83,7 @@ interface screenMode
 {
 	void Update(Interface parent);
 	void OnGUI(Interface parent);
-	void Hurt(Interface parent, Player n);
+	void Hurt(Interface parent, SnakePlayer n);
 }
 
 //Handles Title Screen control
@@ -184,7 +103,7 @@ public class Title : screenMode
 	{
 		;
 	}
-	public void Hurt(Interface parent, Player n)
+	public void Hurt(Interface parent, SnakePlayer n)
 	{
 		;
 	}
@@ -217,7 +136,7 @@ public class Over : screenMode
 	{
 		;
 	}
-	public void Hurt(Interface parent, Player n)
+	public void Hurt(Interface parent, SnakePlayer n)
 	{
 		;
 	}
@@ -242,39 +161,39 @@ public class Play : screenMode
     public void Update(Interface parent)
     {
 		if (Input.GetButtonDown("Player1Up")) {
-			playboard.playerList[0].ChangeDir(Player.Direction.up);
+			playboard.playerList[0].ChangeDir(SnakePlayer.Direction.up);
 		}
 		if (Input.GetButtonDown("Player1Down")) {
-			playboard.playerList[0].ChangeDir(Player.Direction.down);
+			playboard.playerList[0].ChangeDir(SnakePlayer.Direction.down);
 		}
 		if (Input.GetButtonDown("Player1Left")) {
-			playboard.playerList[0].ChangeDir(Player.Direction.left);
+			playboard.playerList[0].ChangeDir(SnakePlayer.Direction.left);
 		}
 		if (Input.GetButtonDown("Player1Right")) {
-			playboard.playerList[0].ChangeDir(Player.Direction.left);
+			playboard.playerList[0].ChangeDir(SnakePlayer.Direction.left);
 		}
 		if (Input.GetButtonDown("Player2Up")) {
-			playboard.playerList[1].ChangeDir(Player.Direction.up);
+			playboard.playerList[1].ChangeDir(SnakePlayer.Direction.up);
 		}
 		if (Input.GetButtonDown("Player2Down")) {
-			playboard.playerList[1].ChangeDir(Player.Direction.down);
+			playboard.playerList[1].ChangeDir(SnakePlayer.Direction.down);
 		}
 		if (Input.GetButtonDown("Player2Left")) {
-			playboard.playerList[1].ChangeDir(Player.Direction.left);
+			playboard.playerList[1].ChangeDir(SnakePlayer.Direction.left);
 		}
 		if (Input.GetButtonDown("Player2Right")) {
-			playboard.playerList[1].ChangeDir(Player.Direction.right);
+			playboard.playerList[1].ChangeDir(SnakePlayer.Direction.right);
 		}
 		if (Input.GetButtonDown("Player1Fire")) {
-			playboard.playerList[0].hitcount++;
+			playboard.playerList[0].lives++;
 		}
 		if (Input.GetButtonDown("Player2Fire")) {
-			playboard.playerList[1].hitcount++;
+			playboard.playerList[1].lives++;
 		}
 		if (Input.GetKey("tab")) {
-			if (playboard.playerList[0].hitcount > playboard.playerList[1].hitcount) {
+			if (playboard.playerList[0].lives > playboard.playerList[1].lives) {
 				parent.winner = 1;
-			} else if (playboard.playerList[0].hitcount < playboard.playerList[1].hitcount) {
+			} else if (playboard.playerList[0].lives < playboard.playerList[1].lives) {
 				parent.winner = 2;
 			} else {
 				parent.winner = 0;
@@ -298,11 +217,10 @@ public class Play : screenMode
 	
 	public void OnGUI(Interface parent)
 	{
-		GUI.Label(new Rect(10, 10, 1000, 1000), count.ToString());
 		playboard.Draw();
 	}
 	
-	public void Hurt(Interface parent, Player n)
+	public void Hurt(Interface parent, SnakePlayer n)
 	{
 		lifecount[Array.IndexOf(playboard.playerList, n)]--;
 		if (lifecount[0] == 0 && lifecount[1] == 0)

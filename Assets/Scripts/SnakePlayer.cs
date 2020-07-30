@@ -9,12 +9,16 @@ public class SnakePlayer : MonoBehaviour
     {
 
     }
-	public enum Direction {no};
+	public enum Direction {up,down,left,right};
 	private SnakePlayer(){}
     public SnakePlayer(float X, float Y, Color shade)
     {
 
     }
+	
+	public float X;
+	public float Y;
+	public int lives;
 
     public bool CheckCollide(float X, float Y)
     {
@@ -47,7 +51,7 @@ public class SnakePlayer : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
 
     }
