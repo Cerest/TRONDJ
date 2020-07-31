@@ -13,6 +13,29 @@ public class Board
 		maxX = Xsize;
 		maxY = Ysize;
 		this.parent = parent;
+		GameObject border;
+		border = new GameObject("BorderBottom", typeof(SpriteRenderer));
+		border.GetComponent<Transform>().position = new Vector3(0, 0, -50);
+		border.GetComponent<SpriteRenderer>().sprite = parent.playborder;
+		border.GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Tiled;
+		border.GetComponent<SpriteRenderer>().size = new Vector2(Xsize, 0.5f);
+		border = new GameObject("BorderLeft", typeof(SpriteRenderer));
+		border.GetComponent<Transform>().position = new Vector3(0, 0, -50);
+		border.GetComponent<Transform>().Rotate(0, 0, 90);
+		border.GetComponent<SpriteRenderer>().sprite = parent.playborder;
+		border.GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Tiled;
+		border.GetComponent<SpriteRenderer>().size = new Vector2(Ysize, 0.5f);
+		border = new GameObject("BorderRight", typeof(SpriteRenderer));
+		border.GetComponent<Transform>().position = new Vector3(Xsize, 0, -50);
+		border.GetComponent<Transform>().Rotate(0, 0, 90);
+		border.GetComponent<SpriteRenderer>().sprite = parent.playborder;
+		border.GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Tiled;
+		border.GetComponent<SpriteRenderer>().size = new Vector2(Ysize, 0.5f);
+		border = new GameObject("BorderTop", typeof(SpriteRenderer));
+		border.GetComponent<Transform>().position = new Vector3(0, Ysize, -50);
+		border.GetComponent<SpriteRenderer>().sprite = parent.playborder;
+		border.GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Tiled;
+		border.GetComponent<SpriteRenderer>().size = new Vector2(Xsize, 0.5f);
 	}
 	
 	public SnakePlayer[] playerList;
@@ -25,6 +48,10 @@ public class Board
 	{
 		playerList = null;
 		powerupList = null;
+		GameObject.Destroy(GameObject.Find("BorderBottom"));
+		GameObject.Destroy(GameObject.Find("BorderTop"));
+		GameObject.Destroy(GameObject.Find("BorderLeft"));
+		GameObject.Destroy(GameObject.Find("BorderRight"));
 	}
 	public void Collide()
 	{
@@ -35,15 +62,19 @@ public class Board
 					powerup.Effect(player);
 				}
 			}
-		    //Players touching players
-			if (playerList[0].CheckCollide(playerList[1].X, playerList[1].Y)) {
-				//Two hit one
-				playerList[1].Die();
+			//Players touching walls
+			if (player.Y > maxY || player.Y < 0 || player.X > maxX || player.X < 0) {
+				player.Die();
 			}
-			if (playerList[1].CheckCollide(playerList[0].X, playerList[0].Y)) {
-				//One hit two
-				playerList[0].Die();
-			}
+		}
+		   //Players touching players
+		if (playerList[0].CheckCollide(playerList[1].X, playerList[1].Y)) {
+			//Two hit one
+			playerList[1].Die();
+		}
+		if (playerList[1].CheckCollide(playerList[0].X, playerList[0].Y)) {
+			//One hit two
+			playerList[0].Die();
 		}
 	}
 	public void Update()

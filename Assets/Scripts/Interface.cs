@@ -18,6 +18,7 @@ public class Interface : MonoBehaviour
 	public Texture screenborder;
 	public Sprite player1Tail;
 	public Sprite player2Tail;
+	public Sprite playborder;
 	
 	public enum Screen { None, Title, Play, Over };
 	
