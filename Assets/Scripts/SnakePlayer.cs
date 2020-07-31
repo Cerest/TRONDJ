@@ -10,7 +10,8 @@ public class SnakePlayer
 {
     public enum Direction { up, down, left, right };
 
-	public struct TailPiece {
+	public class TailPiece {
+		private TailPiece(){}
 		public TailPiece(float X, float Y, int ttl, GameObject vis)
 		{
 			Xpos = X;
@@ -34,6 +35,7 @@ public class SnakePlayer
 		visual = shade;
 		this.tail = new List<TailPiece>();
 		tailColor = tail;
+		tailTimer = 30;
     }
 
     public float X;
@@ -138,6 +140,9 @@ public class SnakePlayer
     // Update is called once per frame
     public void Update()
     {
-
+		//Tail updates
+		tail.ForEach(x => x.lifetime -= 1);
+		tail.FindAll(x => x.lifetime == 0).ForEach(x => GameObject.Destroy(x.visual));
+		tail.RemoveAll(x => x.lifetime == 0);
     }
 }
