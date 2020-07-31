@@ -7,8 +7,8 @@ public class Board
 	public Board(float Xsize, float Ysize, Interface parent)
 	{
 		playerList = new SnakePlayer[2];
-		playerList[0] = new SnakePlayer(10, 25, GameObject.Find("Player1"), parent.player1Tail);
-		playerList[1] = new SnakePlayer(10, 40, GameObject.Find("Player2"), parent.player2Tail);
+		playerList[0] = new SnakePlayer(10, 25, GameObject.Find("Player1"), parent.player1Tail, this);
+		playerList[1] = new SnakePlayer(10, 40, GameObject.Find("Player2"), parent.player2Tail, this);
 		powerupList = new List<PowerUp>();
 		maxX = Xsize;
 		maxY = Ysize;
@@ -77,6 +77,24 @@ public class Board
 			playerList[0].Die();
 		}
 	}
+	
+	public Vector2 GetSafePos()
+	{
+		Vector2 pos = new Vector2(0, 0);
+		while (true) {
+			pos.x = Random.Range(1.0f, maxX-1);
+			pos.y = Random.Range(1.0f, maxY-1);
+			foreach (SnakePlayer player in playerList) {
+				//Avoid players
+				if (player.CheckCollide(pos.x, pos.y)) {
+					continue;
+				}
+			}
+			break;
+		}
+		return pos;
+	}
+	
 	public void Update()
 	{
 		foreach (SnakePlayer player in playerList) {

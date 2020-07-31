@@ -45,11 +45,6 @@ public class Interface : MonoBehaviour
 		mode.OnGUI(this);
 	}
 	
-	public void Hurt(SnakePlayer n)
-	{
-		mode.Hurt(this, n);
-	}
-	
 	public void State(Screen n)
 	{
 		switch (n) {
@@ -153,7 +148,6 @@ public class Play : screenMode
 {
 	private int[] lifecount;
 	private Board playboard;
-	private int count = 0;
 	
 	private Play(){}	//No parameterless constructor
 	public Play(int playerCount, float boardSizeX, float boardSizeY, Interface parent)
@@ -190,31 +184,8 @@ public class Play : screenMode
 		if (Input.GetButtonDown("Player2Right")) {
 			playboard.playerList[1].ChangeDir(SnakePlayer.Direction.right);
 		}
-		if (Input.GetButtonDown("Player1Fire")) {
-			playboard.playerList[0].lives++;
-		}
-		if (Input.GetButtonDown("Player2Fire")) {
-			playboard.playerList[1].lives++;
-		}
-		if (Input.GetKey("tab")) {
-			if (playboard.playerList[0].lives > playboard.playerList[1].lives) {
-				parent.winner = 1;
-			} else if (playboard.playerList[0].lives < playboard.playerList[1].lives) {
-				parent.winner = 2;
-			} else {
-				parent.winner = 0;
-			};
-			parent.State(Interface.Screen.Over);
-		}
-		if (Input.GetKey("h")) {
-			GameObject.Find("CrashSound").GetComponent<AudioSource>().Play();
-		}
-		if (Input.GetKey("i")) {
-			GameObject.Find("PowerupSound").GetComponent<AudioSource>().Play();
-		}
         playboard.Collide();
 		playboard.Update();
-		count++;
 		var cam1trans = parent.CameraPlayer1.GetComponent<Transform>();
 		var cam2trans = parent.CameraPlayer2.GetComponent<Transform>();
 		cam1trans.position = new Vector3(playboard.playerList[0].X, playboard.playerList[0].Y, cam1trans.position.z);

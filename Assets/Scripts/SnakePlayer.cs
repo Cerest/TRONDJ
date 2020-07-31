@@ -26,7 +26,7 @@ public class SnakePlayer
 	}
 
     private SnakePlayer() { }
-    public SnakePlayer(float X, float Y, GameObject shade, Sprite tail) //Color shade) Skipping for now
+    public SnakePlayer(float X, float Y, GameObject shade, Sprite tail, Board them) //Color shade) Skipping for now
     {
         this.X = X;
         this.Y = Y;
@@ -36,8 +36,10 @@ public class SnakePlayer
 		this.tail = new List<TailPiece>();
 		tailColor = tail;
 		tailTimer = -1;
+		parent = them;
     }
 
+	public Board parent;
     public float X;
     public float Y;
     public int lives;
@@ -138,6 +140,22 @@ public class SnakePlayer
         else
         {
             currDir = dir;
+			int facing = 0;
+			switch (dir) {
+				case Direction.up :
+					facing = 0;
+					break;
+				case Direction.down :
+					facing = 180;
+					break;
+				case Direction.right :
+					facing = 90;
+					break;
+				case Direction.left :
+					facing = 270;
+					break;
+			}
+			visual.GetComponent<Transform>().eulerAngles = new Vector3(0, 0, facing);
         }
     }
 
@@ -153,8 +171,9 @@ public class SnakePlayer
 		tail = new List<TailPiece>();
 		lives--;
 		invincible = 90;
-		X = 20;
-		Y = 20;
+		Vector2 pos = parent.GetSafePos();
+		X = pos.x;
+		Y = pos.y;
     }
 
     // Update is called once per frame
