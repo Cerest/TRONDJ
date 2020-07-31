@@ -149,10 +149,10 @@ public class SnakePlayer
 					facing = 180;
 					break;
 				case Direction.right :
-					facing = 90;
+					facing = -90;
 					break;
 				case Direction.left :
-					facing = 270;
+					facing = 90;
 					break;
 			}
 			visual.GetComponent<Transform>().eulerAngles = new Vector3(0, 0, facing);
