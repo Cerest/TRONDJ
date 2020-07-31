@@ -35,7 +35,7 @@ public class SnakePlayer
 		visual = shade;
 		this.tail = new List<TailPiece>();
 		tailColor = tail;
-		tailTimer = 30;
+		tailTimer = -1;
     }
 
     public float X;
@@ -152,7 +152,9 @@ public class SnakePlayer
 		}
 		tail = new List<TailPiece>();
 		lives--;
-		invincible = 30;
+		invincible = 90;
+		X = 20;
+		Y = 20;
     }
 
     // Update is called once per frame
