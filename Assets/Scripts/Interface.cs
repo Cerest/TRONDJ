@@ -16,6 +16,8 @@ public class Interface : MonoBehaviour
 	public int winner;
 	private GameObject[] winmsgs;
 	public Texture screenborder;
+	public Sprite player1Tail;
+	public Sprite player2Tail;
 	
 	public enum Screen { None, Title, Play, Over };
 	
@@ -61,7 +63,7 @@ public class Interface : MonoBehaviour
 				MainCamera.GetComponent<Camera>().enabled = false;
 				CameraPlayer1.GetComponent<Camera>().enabled = true;
 				CameraPlayer2.GetComponent<Camera>().enabled = true;
-				mode = new Play(2, 100, 100);
+				mode = new Play(2, 100, 100, this);
 				break;
 			case Screen.Over :
 			    MainCamera.GetComponent<Camera>().enabled = true;
@@ -153,10 +155,10 @@ public class Play : screenMode
 	private int count = 0;
 	
 	private Play(){}	//No parameterless constructor
-	public Play(int playerCount, float boardSizeX, float boardSizeY)
+	public Play(int playerCount, float boardSizeX, float boardSizeY, Interface parent)
 	{
 		lifecount = new int[playerCount];
-		playboard = new Board(boardSizeX, boardSizeY);
+		playboard = new Board(boardSizeX, boardSizeY, parent);
 		GameObject.Find("GameMusic").GetComponent<AudioSource>().Play();
 		GameObject.Find("MenuMusic").GetComponent<AudioSource>().Stop();
 	}
@@ -173,7 +175,7 @@ public class Play : screenMode
 			playboard.playerList[0].ChangeDir(SnakePlayer.Direction.left);
 		}
 		if (Input.GetButtonDown("Player1Right")) {
-			playboard.playerList[0].ChangeDir(SnakePlayer.Direction.left);
+			playboard.playerList[0].ChangeDir(SnakePlayer.Direction.right);
 		}
 		if (Input.GetButtonDown("Player2Up")) {
 			playboard.playerList[1].ChangeDir(SnakePlayer.Direction.up);

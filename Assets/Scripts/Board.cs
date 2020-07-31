@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class Board
 {
-	public Board(float Xsize, float Ysize)
+	public Board(float Xsize, float Ysize, Interface parent)
 	{
 		playerList = new SnakePlayer[2];
-		playerList[0] = new SnakePlayer(10, 25, Color.green);
-		playerList[1] = new SnakePlayer(10, 40, Color.white);
+		playerList[0] = new SnakePlayer(10, 25, GameObject.Find("Player1"), parent.player1Tail);
+		playerList[1] = new SnakePlayer(10, 40, GameObject.Find("Player2"), parent.player2Tail);
 		powerupList = new List<PowerUp>();
+		maxX = Xsize;
+		maxY = Ysize;
 	}
 	
 	public SnakePlayer[] playerList;
 	public List<PowerUp> powerupList;
+	public float maxX;
+	public float maxY;
 	
 	public void GameEnd()
 	{

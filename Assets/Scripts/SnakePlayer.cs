@@ -6,67 +6,84 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
-public class SnakePlayer : MonoBehaviour
+public class SnakePlayer
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
     public enum Direction { up, down, left, right };
 
-    private SnakePlayer() { }
+	public struct TailPiece {
+		public TailPiece(float X, float Y, int ttl, GameObject vis)
+		{
+			Xpos = X;
+			Ypos = Y;
+			lifetime = ttl;
+			visual = vis;
+		}
+		public float Xpos;
+		public float Ypos;
+		public int lifetime;
+		public GameObject visual;
+	}
 
-    public SnakePlayer(float X, float Y, Color shade)
+    private SnakePlayer() { }
+    public SnakePlayer(float X, float Y, GameObject shade, Sprite tail) //Color shade) Skipping for now
     {
         this.X = X;
         this.Y = Y;
         lives = 5;
         currDir = Direction.up;
+		visual = shade;
+		this.tail = new List<TailPiece>();
+		tailColor = tail;
     }
 
     public float X;
     public float Y;
     public int lives;
     public Direction currDir;
-    public float Speed = 0.1;
-
+    public float Speed = 0.1f;
+	public GameObject visual;
+	public int tailTimer;
+	public List<TailPiece> tail;
+	public Sprite tailColor;
+	public float hitdist = 0.1f;
 
     public bool CheckCollide(float X, float Y)
     {
-        bool collision;
-        if ((this.X - 5 < X && this.X + 5 > X) && (this.Y - 5 < Y && this.Y + 5 > Y))
+        bool collision = false;
+        if (CheckCollideHead(X, Y))
         {
             collision = true;
         }
         else
         {
-            collision = false;
+            foreach (TailPiece piece in tail)
+			{
+				if ((piece.Xpos - hitdist < X && piece.Xpos + hitdist > X) && (piece.Ypos - hitdist < Y && piece.Ypos + hitdist > Y))
+				{
+					collision = true;
+					break;
+				}
+			}
         }
         return collision;
     }
 
     public bool CheckCollideHead(float X, float Y)
     {
-        bool collision;
-        if ((this.X - 5 < X && this.X + 5 > X) && (this.Y - 5 < Y && this.Y + 5 > Y))
-        {
-            collision = true;
-        }
-        else
-        {
-            collision = false;
-        }
-        return collision;
+        return (this.X - hitdist < X && this.X + hitdist > X) && (this.Y - hitdist < Y && this.Y + hitdist > Y);
     }
 
-    public Draw()
+    public void Draw()
     {
-
+		visual.GetComponent<Transform>().position = new Vector3(X, Y, -50);
     }
 
-    public Move()
+    public void Move()
     {
+		TailPiece newTrail = new TailPiece(X, Y, tailTimer, new GameObject("tail", typeof(SpriteRenderer)));
+		tail.Add(newTrail);
+		newTrail.visual.GetComponent<Transform>().position = new Vector3(newTrail.Xpos, newTrail.Ypos, -40);
+		newTrail.visual.GetComponent<SpriteRenderer>().sprite = tailColor;
         switch(currDir)
         {
             case Direction.up:
@@ -84,28 +101,24 @@ public class SnakePlayer : MonoBehaviour
         }
     }
 
-    public ChangeDir(Direction dir)
+    public void ChangeDir(Direction dir)
     {
 
         if (currDir == Direction.down && dir == Direction.up)
         {
-            break;
+            return;
         }
         else if (currDir == Direction.up && dir == Direction.down)
         {
-            break;
+            return;
         }
         else if (currDir == Direction.left && dir == Direction.right)
         {
-            break;
+            return;
         }
         else if (currDir == Direction.right && dir == Direction.left)
         {
-            break;
-        }
-        else if (currDir == dir)
-        {
-            break;
+            return;
         }
         else
         {
@@ -113,9 +126,13 @@ public class SnakePlayer : MonoBehaviour
         }
     }
 
-    public Die()
+    public void Die()
     {
-
+		GameObject.Find("CrashSound").GetComponent<AudioSource>().Play();
+		foreach (TailPiece piece in tail) {
+			GameObject.Destroy(piece.visual);
+		}
+		tail = new List<TailPiece>();
     }
 
     // Update is called once per frame
