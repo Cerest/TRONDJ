@@ -59,7 +59,7 @@ public class Interface : MonoBehaviour
 				MainCamera.GetComponent<Camera>().enabled = false;
 				CameraPlayer1.GetComponent<Camera>().enabled = true;
 				CameraPlayer2.GetComponent<Camera>().enabled = true;
-				mode = new Play(2, 100, 100, this);
+				mode = new Play(2, 25, 25, this);
 				break;
 			case Screen.Over :
 			    MainCamera.GetComponent<Camera>().enabled = true;

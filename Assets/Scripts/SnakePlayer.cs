@@ -170,7 +170,7 @@ public class SnakePlayer
 		}
 		tail = new List<TailPiece>();
 		lives--;
-		invincible = 90;
+		invincible = 60;
 		Vector2 pos = parent.GetSafePos();
 		X = pos.x;
 		Y = pos.y;
