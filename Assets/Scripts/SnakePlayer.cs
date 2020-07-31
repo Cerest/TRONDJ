@@ -42,12 +42,13 @@ public class SnakePlayer
     public float Y;
     public int lives;
     public Direction currDir;
-    public float Speed = 0.1f;
+    public float Speed = 0.11f;
 	public GameObject visual;
 	public int tailTimer;
 	public List<TailPiece> tail;
 	public Sprite tailColor;
 	public float hitdist = 0.1f;
+	public int invincible;
 
     public bool CheckCollide(float X, float Y)
     {
@@ -56,19 +57,26 @@ public class SnakePlayer
         {
             collision = true;
         }
-        else
+        else if (CheckCollideTail(X, Y))
         {
-            foreach (TailPiece piece in tail)
-			{
-				if ((piece.Xpos - hitdist < X && piece.Xpos + hitdist > X) && (piece.Ypos - hitdist < Y && piece.Ypos + hitdist > Y))
-				{
-					collision = true;
-					break;
-				}
-			}
+            collision = true;
         }
         return collision;
     }
+	
+	public bool CheckCollideTail(float X, float Y)
+	{
+        bool collision = false;
+        foreach (TailPiece piece in tail)
+		{
+			if ((piece.Xpos - hitdist < X && piece.Xpos + hitdist > X) && (piece.Ypos - hitdist < Y && piece.Ypos + hitdist > Y))
+			{
+				collision = true;
+				break;
+			}
+		}
+        return collision;
+	}
 
     public bool CheckCollideHead(float X, float Y)
     {
@@ -82,10 +90,6 @@ public class SnakePlayer
 
     public void Move()
     {
-		TailPiece newTrail = new TailPiece(X, Y, tailTimer, new GameObject("tail", typeof(SpriteRenderer)));
-		tail.Add(newTrail);
-		newTrail.visual.GetComponent<Transform>().position = new Vector3(newTrail.Xpos, newTrail.Ypos, -40);
-		newTrail.visual.GetComponent<SpriteRenderer>().sprite = tailColor;
         switch(currDir)
         {
             case Direction.up:
@@ -101,6 +105,15 @@ public class SnakePlayer
                 X += Speed;
                 break;
         }
+		//Check self collision
+		if (CheckCollideTail(X, Y))
+		{
+			Die();
+		}
+		TailPiece newTrail = new TailPiece(X, Y, tailTimer, new GameObject("tail", typeof(SpriteRenderer)));
+		tail.Add(newTrail);
+		newTrail.visual.GetComponent<Transform>().position = new Vector3(newTrail.Xpos, newTrail.Ypos, -40);
+		newTrail.visual.GetComponent<SpriteRenderer>().sprite = tailColor;
     }
 
     public void ChangeDir(Direction dir)
@@ -130,11 +143,16 @@ public class SnakePlayer
 
     public void Die()
     {
+		if (invincible > 0) {
+			return;
+		}
 		GameObject.Find("CrashSound").GetComponent<AudioSource>().Play();
 		foreach (TailPiece piece in tail) {
 			GameObject.Destroy(piece.visual);
 		}
 		tail = new List<TailPiece>();
+		lives--;
+		invincible = 30;
     }
 
     // Update is called once per frame
@@ -144,5 +162,9 @@ public class SnakePlayer
 		tail.ForEach(x => x.lifetime -= 1);
 		tail.FindAll(x => x.lifetime == 0).ForEach(x => GameObject.Destroy(x.visual));
 		tail.RemoveAll(x => x.lifetime == 0);
+		//Self updates
+		if (invincible > 0) {
+			invincible--;
+		}
     }
 }

@@ -12,12 +12,14 @@ public class Board
 		powerupList = new List<PowerUp>();
 		maxX = Xsize;
 		maxY = Ysize;
+		this.parent = parent;
 	}
 	
 	public SnakePlayer[] playerList;
 	public List<PowerUp> powerupList;
 	public float maxX;
 	public float maxY;
+	public Interface parent;
 	
 	public void GameEnd()
 	{
@@ -49,6 +51,16 @@ public class Board
 		foreach (SnakePlayer player in playerList) {
 			player.Update();
 			player.Move();
+		}
+		if (playerList[0].lives == 0 && playerList[1].lives == 0) {
+			parent.winner = 0;
+			parent.State(Interface.Screen.Over);
+		} else if (playerList[0].lives == 0) {
+			parent.winner = 2;
+			parent.State(Interface.Screen.Over);
+		} else if (playerList[1].lives == 0) {
+			parent.winner = 1;
+			parent.State(Interface.Screen.Over);
 		}
 	}
 	public void Draw()
